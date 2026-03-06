@@ -1,0 +1,4 @@
+### Requerimientos  funcionales:
+
+1.
+

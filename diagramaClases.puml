@@ -1,0 +1,88 @@
+@startuml CursoVirtual
+Class Student{
+
+}
+
+Class Course{
+
+}
+
+Class Module{
+
+}
+
+Class Lesson{
+
+}
+
+Class Notification{
+
+}
+
+Class Content{
+
+}
+
+Class Teacher{
+
+}
+
+''Patron Observer
+Interface Observer{
+
+}
+
+Interface Subject{
+
+}
+
+'' Patron Iterator
+interface Iterator{
+
+}
+
+Class IteratorModule{
+
+}
+
+class IteratorLesson{
+
+}
+
+Interface Aggregate{
+
+}
+
+Class ConcrectIterator{
+
+}
+
+
+'' Singleton
+Class CourseCatalog{
+    
+}
+
+
+
+
+
+
+
+'' Relaciones
+Course "1" *-- "0..*" Module
+Module "1" *-- "0.." Content
+Content "1" *-- "0.." Lesson
+Course "1" o-- "0..*" Teacher
+Course "1" o-- "0..*" Student
+Aggregate "1" o-- "0..*" Module
+IteratorLesson "0.." o-- "1" Iterator
+
+'' Patron Observer
+Observer "0.." o-- "1" Student
+Notification "0.." o-- "1" Subject
+IteratorModule "0.." o-- "1" Iterator
+
+
+
+@enduml
