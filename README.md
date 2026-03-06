@@ -1,10 +1,10 @@
-### Caso 2. Plataforma de cursos virtuales
+# Caso 2. Plataforma de cursos virtuales
 
 ## Integrantes
-# Johan Smith Santamaria Fernandez
-# Sharik Dayanna Rojas Ibarra
-# Justin Daniela Bahamon Baloco
-# Nicole Dayana Vargas Ramirez
+### Johan Smith Santamaria Fernandez
+### Sharik Dayanna Rojas Ibarra
+### Justin Daniela Bahamon Baloco
+### Nicole Dayana Vargas Ramirez
 
 
 Patrones obligatorios: Observer + Iterator + Singleton
