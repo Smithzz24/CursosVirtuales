@@ -1,5 +1,12 @@
 @startuml CursoVirtual
+Class User{
+    
+}
 Class Student{
+
+}
+
+class Admin{
 
 }
 
@@ -15,10 +22,6 @@ Class Lesson{
 
 }
 
-Class Notification{
-
-}
-
 Class Content{
 
 }
@@ -27,21 +30,29 @@ Class Teacher{
 
 }
 
+
 ''Patron Observer
 Interface Observer{
+    +update(notification: Notification)
 
 }
 
 Interface Subject{
+    +registerObserver(o: Observer)
+    +removeObserver(o: Observer)
+    +notifyObservers()
 
 }
 
 '' Patron Iterator
 interface Iterator{
+    +hasNext(): boolean
+    +next(): Object
 
 }
 
 Class IteratorModule{
+
 
 }
 
@@ -50,16 +61,17 @@ class IteratorLesson{
 }
 
 Interface Aggregate{
-
-}
-
-Class ConcrectIterator{
+    +createIterator(): Iterator
 
 }
 
 
 '' Singleton
-Class CourseCatalog{
+Class CourseManager{
+    -instance: CourseManager {static}
+    -CourseManager()
+    +getInstance(): CourseManager {static}
+    +CreateCurse(name: String): Course
     
 }
 
@@ -70,18 +82,30 @@ Class CourseCatalog{
 
 
 '' Relaciones
+User <|-- Student
+User <|-- Teacher
+User <|-- Admin
 Course "1" *-- "0..*" Module
 Module "1" *-- "0.." Content
 Content "1" *-- "0.." Lesson
 Course "1" o-- "0..*" Teacher
 Course "1" o-- "0..*" Student
-Aggregate "1" o-- "0..*" Module
-IteratorLesson "0.." o-- "1" Iterator
+
+'' Patron Iterator
+Aggregate -->  Iterator :create
+Course ..|> Aggregate  : implements
+IteratorModule ..|> Iterator : implements
+IteratorLesson ..|> Iterator : implements
+
 
 '' Patron Observer
-Observer "0.." o-- "1" Student
-Notification "0.." o-- "1" Subject
-IteratorModule "0.." o-- "1" Iterator
+Student ..|> Observer
+Content ..|> Subject
+Subject --> Observer
+
+''patron Singleton
+CourseManager ...> Course : creates
+Admin ..> CourseManager : uses
 
 
 
