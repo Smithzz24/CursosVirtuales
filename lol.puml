@@ -1,0 +1,163 @@
+@startuml CursoVirtual
+
+' ==========================
+' PAQUETES PARA ORGANIZAR CLASES
+' ==========================
+ left to right direction
+ skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+package "Clases Principales" #LightBlue {
+    class User {
+        -id: int
+        -name: String
+        -email: String
+    }
+
+    class Student {
+        +enroll(course: Course)
+        +update(notification: Notification)
+    }
+
+    class Admin {
+        +assignTeacher(course: Course, teacher: Teacher)
+        +createCourse(name:String): Course
+    }
+
+    class Teacher {
+        +update(notification: Notification)
+    }
+
+    class Course {
+        -title: String
+        -modules: List<Module>
+        -observers: List<Observer>
+        +addModule(m: Module)
+        +addStudent(s: Student)
+        +assignTeacher(t: Teacher)
+        +createIterator(): Iterator
+        +registerObserver(o: Observer)
+        +removeObserver(o: Observer)
+        +notifyObservers()
+    }
+
+    class Module {
+        -title: String
+        -contents: List<Content>
+        +addContent(c: Content)
+        +createIterator(): Iterator
+    }
+
+    class Content {
+        -title: String
+        -lessons: List<Lesson>
+        -observers: List<Observer>
+        +registerObserver(o: Observer)
+        +removeObserver(o: Observer)
+        +notifyObservers()
+        +createLesson(title: String, videoURL: String)
+    }
+
+    class Lesson {
+        -title: String
+        -videoURL: String
+    }
+
+    class Notification {
+        -message: String
+    }
+}
+
+package "Patrón Observer" #LightGreen {
+    interface Observer {
+        +update(notification: Notification)
+    }
+
+    interface Subject {
+        +registerObserver(o: Observer)
+        +removeObserver(o: Observer)
+        +notifyObservers()
+    }
+}
+
+package "Patrón Iterator" #LightYellow {
+    interface Iterator {
+        +hasNext(): boolean
+        +next(): Object
+    }
+
+    interface Aggregate {
+        +createIterator(): Iterator
+    }
+
+    class IteratorModule {
+        -modules: List<Module>
+        -position: int
+        +hasNext(): boolean
+        +next(): Module
+    }
+
+    class IteratorLesson {
+        -lessons: List<Lesson>
+        -position: int
+        +hasNext(): boolean
+        +next(): Lesson
+    }
+}
+
+package "Patrón Singleton" #LightPink {
+    class CourseManager {
+        -instance: CourseManager {static}
+        -CourseManager()
+        +getInstance(): CourseManager {static}
+        +createCourse(name: String): Course
+    }
+}
+
+' ==========================
+' HERENCIA
+' ==========================
+User <|-- Student
+User <|-- Teacher
+User <|-- Admin
+
+' ==========================
+' COMPOSICIÓN
+' ==========================
+Course "1" *-- "0..*" Module
+Module "1" *-- "0..*" Content
+Content "1" *-- "0..*" Lesson
+
+' ==========================
+' AGREGACIÓN
+' ==========================
+Course "1" o-- "0..*" Teacher
+Course "1" o-- "0..*" Student
+
+' ==========================
+' ITERATOR
+' ==========================
+Aggregate ..> Iterator : create
+Course ..|> Aggregate
+Module ..|> Aggregate
+IteratorModule ..|> Iterator
+IteratorLesson ..|> Iterator
+Course --> IteratorModule
+Module --> IteratorLesson
+
+' ==========================
+' OBSERVER
+' ==========================
+Student ..|> Observer
+Teacher ..|> Observer
+Content ..|> Subject
+Course ..|> Subject
+Subject --> Observer
+Content --> Notification
+
+' ==========================
+' SINGLETON
+' ==========================
+CourseManager ...> Course : creates
+Admin ..> CourseManager : uses
+
+@enduml

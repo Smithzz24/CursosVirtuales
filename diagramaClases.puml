@@ -1,112 +1,159 @@
 @startuml CursoVirtual
-Class User{
-    
-}
-Class Student{
+ left to right direction
+ skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 
+Class User{
+    -id: int
+    -name: String
+    -email: String
+}
+
+Class Student{
+    +enroll(course: Course)
+    +update(notification: Notification)
 }
 
 class Admin{
-
+    +assignTeacher(course: Course, teacher: Teacher)
+    +createCourse(name:String): Course
 }
 
 Class Course{
-
-}
-
-Class Module{
-
-}
-
-Class Lesson{
-
-}
-
-Class Content{
-
-}
-
-Class Teacher{
-
-}
-
-
-''Patron Observer
-Interface Observer{
-    +update(notification: Notification)
-
-}
-
-Interface Subject{
+    -title: String
+    -modules: List<Module>
+    +addModule(m: Module)
+    +addStudent(s: Student)
+    +assignTeacher(t: Teacher)
+    +createIterator(): Iterator
+    -observers: List<Observer>
     +registerObserver(o: Observer)
     +removeObserver(o: Observer)
     +notifyObservers()
 
 }
 
-'' Patron Iterator
+Class Module{
+    -title: String
+    -contents: List<Content>
+    -observers: List<Observer>
+    +createContent(title: String) : Content
+    +createIterator(): Iterator
+    +registerObserver(o: Observer)
+    +removeObserver(o: Observer)
+    +notifyObservers()
+}
+
+Class Lesson{
+    -title: String
+    -videoURL: String
+}
+
+Class Content{
+    -title: String
+    -lessons: List<Lesson>
+    -observers: List<Observer>
+    +createLesson(title: String, videoURL: String)
+    +registerObserver(o: Observer)
+    +removeObserver(o: Observer)
+    +notifyObservers()
+}
+
+Class Teacher{
++update(notification: Notification)
+}
+
+''Patron observer lo estudiantes y profesores son los observadores y el contenido, modulo y curso son los sujetos el cual cambia o se actuliza. Cada actulizacion o cambio se les notifica a los observadores, los estudiantes en este caso. El sujeto tiene la lista de observadores y  los metodos. Ademas el observador implementa el metodo update para las notificaciones. El mensaje se encapsula en la clase notificacion, la cual se pasa al metodo update y se  muestra al estudiante. Al estudiante se le notifica si hay nuevo contenido o una nueva leccion y al profesor que ha sido asignado a un curso''
+Class Notification{
+    -message: String
+}
+Interface Observer{
+    +update(notification: Notification)
+}
+
+Interface Subject{
+    +registerObserver(o: Observer)
+    +removeObserver(o: Observer)
+    +notifyObservers()
+}
+
+''iterador: se crea una interfaz iterador con los metodos hasNext y next. Luego se crean dos clases iterador, uno para los modulos y otro para las lecciones. Cada clase iterador tiene una lista de los elementos a iterar y una posicion actual. El metodo hasNext verifica si hay mas elementos por iterar y el metodo next devuelve el siguiente elemento y avanza la posicion. Las clases curso y modulo implementan la interfaz aggregate, la cual tiene un metodo createIterator que devuelve un iterador para sus respectivos elementos (modulos o lecciones).''
 interface Iterator{
     +hasNext(): boolean
     +next(): Object
-
 }
 
 Class IteratorModule{
-
-
+    -modules: List<Module>
+    -position: int
+    +hasNext(): boolean
+    +next(): Module
 }
 
 class IteratorLesson{
-
+    -lessons: List<Lesson>
+    -position: int
+    +hasNext(): boolean
+    +next(): Lesson
 }
 
 Interface Aggregate{
     +createIterator(): Iterator
-
 }
 
-
-'' Singleton
+'' Patron Singleton: Se crea una estancia unica para poder crear cursos desde el Admin. Debe tener una variable statica para almacenar la instancia unica, un constructor privado y un metodo estatico para poder accerder a la instancia y crear los cursos.''
 Class CourseManager{
     -instance: CourseManager {static}
+    -courses :  List<Course>
     -CourseManager()
     +getInstance(): CourseManager {static}
-    +CreateCurse(name: String): Course
-    
+    +createCourse(name: String): Course
 }
 
-
-
-
-
-
-
-'' Relaciones
-User <|-- Student
+''Herencia
+User <|-- Student 
 User <|-- Teacher
 User <|-- Admin
+
+''composicion
 Course "1" *-- "0..*" Module
-Module "1" *-- "0.." Content
-Content "1" *-- "0.." Lesson
+Module "1" *-- "0..*" Content
+Content "1" *-- "0..*" Lesson
+
+''Agregacion
 Course "1" o-- "0..*" Teacher
 Course "1" o-- "0..*" Student
 
 '' Patron Iterator
-Aggregate -->  Iterator :create
-Course ..|> Aggregate  : implements
-IteratorModule ..|> Iterator : implements
-IteratorLesson ..|> Iterator : implements
+''dependencia
+Aggregate ..> Iterator : create
+''implementacion
+Course ..|> Aggregate
+Module ..|> Aggregate
+IteratorModule ..|> Iterator
+IteratorLesson ..|> Iterator
 
+
+''dependencia debil
+Course --> IteratorModule
+Module --> IteratorLesson
 
 '' Patron Observer
+''implementacion
 Student ..|> Observer
 Content ..|> Subject
-Subject --> Observer
+Teacher ..|> Observer
+Course ..|> Subject
+Module ..|> Subject
 
-''patron Singleton
+
+''asociacion
+Subject --> Observer
+Content --> Notification
+
+'' Patron Singleton
+''dependencia
 CourseManager ...> Course : creates
 Admin ..> CourseManager : uses
-
-
 
 @enduml
